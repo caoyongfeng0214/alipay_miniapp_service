@@ -1,0 +1,11 @@
+{
+  "name": "alipay_miniapp_service",
+  "version": "0.0.1",
+  "description": "service for alipay miniapp. state manager.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "me@caoyongfeng.com",
+  "license": "ISC"
+}
