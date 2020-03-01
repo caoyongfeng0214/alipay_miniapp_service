@@ -1,6 +1,6 @@
 {
   "name": "alipay-miniapp-service",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "service for alipay miniapp. state manager.",
   "main": "index.js",
   "scripts": {
