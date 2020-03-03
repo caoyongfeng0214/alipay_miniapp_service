@@ -60,7 +60,7 @@ class Users extends MiniAppService {
     }
 
     del(id) {
-        
+        let list = this.$get('list');
     }
 }
 
