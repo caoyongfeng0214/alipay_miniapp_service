@@ -58,6 +58,10 @@ class Users extends MiniAppService {
         }
         return this;
     }
+
+    del(id) {
+        
+    }
 }
 
 export default Users;
