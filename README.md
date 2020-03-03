@@ -61,6 +61,12 @@ class Users extends MiniAppService {
 
     del(id) {
         let list = this.$get('list');
+        if(list) {
+            let idx = list.findIndex(T => T.id == id);
+            if(idx >= 0) {
+                list.splice(idx, 1);
+            }
+        }
     }
 }
 
