@@ -60,11 +60,16 @@ function MiniAppService() {
                     }
                     _helper_setkey(descriptor.value, _k);
                 }
-                let v = _helper_getval(_data, target.__$k);
-                v[property] = descriptor.value;
-                _cmps.forEach((T) => {
-                    T.setData({[T[_id] + '.' + target.__$k]: v});
-                });
+                // let v = _helper_getval(_data, target.__$k);
+                // v[property] = descriptor.value;
+                // _cmps.forEach((T) => {
+                //     T.setData({[T[_id] + '.' + target.__$k]: v});
+                // });
+                setTimeout(() => {
+                    _cmps.forEach((T) => {
+                        T.setData({[T[_id] + '.' + target.__$k]: target});
+                    });
+                }, 0);
             }
         }
     };
