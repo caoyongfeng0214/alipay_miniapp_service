@@ -27,7 +27,7 @@ class Users extends MiniAppService {
             this.$set('list', [
                 { id: 1, name: 'CYF' },
                 { id: 2, name: '张学友' },
-                { id: 3, text: '刘备' },
+                { id: 3, name: '刘备' },
             ]);
         }
     }

@@ -111,7 +111,7 @@ MiniAppService.__watch = function(object, onChange) {
             if(property === '__isProxy') {
                 return true;
             }
-            if(property === '__$k') {
+            if(property === '__$k' || !target[property] || target[property].__isProxy || target[property] instanceof Function || !(target[property] instanceof Object)) {
                 return target[property];
             }
             try {
