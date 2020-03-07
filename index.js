@@ -153,19 +153,41 @@ MiniAppService.init = function(keyName, cmp) {
         this.$instance = new this();
     }
     if(this.$instance.$cmps.indexOf(cmp) < 0) {
+        if(cmp.$page) {
+            if(!cmp.$page.__$cmps) {
+                cmp.$page.__$cmps = []
+            }
+            cmp.$page.__$cmps.push(cmp);
+            let _onunload = cmp.$page.onUnload;
+            cmp.$page.onUnload = () => {
+                if(cmp.$page.__$cmps) {
+                    cmp.$page.__$cmps.forEach((T) => {
+                        let idx = this.$instance.$cmps.indexOf(T);
+                        if(idx >= 0) {
+                            this.$instance.$cmps.splice(idx, 1);
+                        }
+                    });
+                    delete cmp.$page.__$cmps;
+                    if(_onunload) {
+                        _onunload.apply(cmp.$page, []);
+                    }
+                }
+            };
+        } else {
+            let _onunload = cmp.onUnload;
+            cmp.onUnload = () => {
+                let idx = this.$instance.$cmps.indexOf(cmp);
+                if(idx >= 0) {
+                    this.$instance.$cmps.splice(idx, 1);
+                }
+                if(_onunload) {
+                    _onunload.apply(cmp, []);
+                }
+            };
+        }
         this.$instance.$cmps.push(cmp);
         cmp.setData({[keyName]: this.$instance.$data});
         cmp[this.$instance.$id] = keyName;
-        let _onunload = cmp.onUnload;
-        cmp.onUnload = () => {
-            let idx = this.$instance.$cmps.indexOf(cmp);
-            if(idx >= 0) {
-                this.$instance.$cmps.splice(idx, 1);
-            }
-            if(_onunload) {
-                _onunload.apply(cmp, arguments);
-            }
-        };
     }
 
     return this.$instance;
