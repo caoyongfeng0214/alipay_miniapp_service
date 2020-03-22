@@ -41,6 +41,9 @@ const _helper_getval = function(obj, k) {
 };
 
 
+const app = getApp();
+
+
 function MiniAppService() {
     let _data = {};
     let _dataChange = function(target, property, descriptor) {
@@ -149,13 +152,17 @@ MiniAppService.init = function(keyName, cmp) {
     if(!cmp.setData) {
         throw 'cmp is not Page or Component';
     }
+    if(!app.__$instances) {
+        app.__$instances = {};
+    }
+    this.$instance = app.__$instances[this.name];
     if(!this.$instance) {
-        this.$instance = new this();
+        this.$instance = app.__$instances[this.name] = new this();
     }
     if(this.$instance.$cmps.indexOf(cmp) < 0) {
         if(cmp.$page) {
             if(!cmp.$page.__$cmps) {
-                cmp.$page.__$cmps = []
+                cmp.$page.__$cmps = [];
             }
             cmp.$page.__$cmps.push(cmp);
             let _onunload = cmp.$page.onUnload;
