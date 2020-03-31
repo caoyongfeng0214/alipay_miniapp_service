@@ -21,6 +21,12 @@ class Users extends MiniAppService {
     constructor() {
         super();
     }
+    
+    // 注意：需为每个Service指定一个名字，在所有的Service中它应该是唯一的。
+    // 在用真机调试时，支付宝会将所有的class统一设为一个name，不知道是为啥。
+    static get Name() {
+        return 'Users';
+    }
 
     gets() {
         if(!this.$get('list')) {
