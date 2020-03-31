@@ -82,9 +82,6 @@ function MiniAppService() {
     this.__defineSetter__('_$dataChange', function() {
         throw '_$dataChange is readonly';
     });
-    this.__defineSetter__('$cmps', function() {
-        throw '$cmps is readonly';
-    });
     let _$data = MiniAppService.__watch(_data, _dataChange);
     this.__defineGetter__('$data', function() {
         return _$data;
@@ -155,9 +152,10 @@ MiniAppService.init = function(keyName, cmp) {
     if(!app.__$instances) {
         app.__$instances = {};
     }
-    this.$instance = app.__$instances[this.name];
+    let instanceName = this.Name || keyName;
+    this.$instance = app.__$instances[instanceName];
     if(!this.$instance) {
-        this.$instance = app.__$instances[this.name] = new this();
+        this.$instance = app.__$instances[instanceName] = new this();
     }
     if(this.$instance.$cmps.indexOf(cmp) < 0) {
         if(cmp.$page) {
