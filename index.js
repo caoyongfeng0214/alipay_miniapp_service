@@ -1,5 +1,3 @@
-const app = getApp();
-
 const CHAR_DOT = '.';
 const CHAR_ARY = '[';
 
@@ -51,6 +49,31 @@ const getObj = function(o, aryKeys) {
 };
 
 
+if(!Component.__$isServiceComp) {
+    const  _Comp = Component;
+    Component = function(ops) {
+        if(!ops) {
+            ops = {};
+        }
+        let _didUnmount = ops.didUnmount;
+        ops.didUnmount = function() {
+            if(this.__$svrs && this.__$svrs instanceof Array) {
+                this.__$svrs.forEach((T) => {
+                    if(T.__removeCmp) {
+                        T.__removeCmp(this);
+                    }
+                });
+            }
+            if(_didUnmount) {
+                _didUnmount.apply(this, arguments);
+            }
+        };
+        return _Comp(ops);
+    };
+    Component.__$isServiceComp = true;
+}
+
+
 function MiniAppService() {
     if(!MiniAppService.__id) {
         MiniAppService.__id = 1;
@@ -62,6 +85,7 @@ function MiniAppService() {
     this.__defineSetter__('$id', function() {
         throw '$id is readonly';
     });
+    const app = getApp();
     if(!app._$datas) {
         app._$datas = {};
     }
@@ -83,6 +107,21 @@ function MiniAppService() {
     this.__defineSetter__('$cmps', function() {
         throw '$cmps is readonly';
     });
+
+    this.__defineGetter__('__removeCmp', function() {
+        return function(cmp) {
+            let idx = _cmps.indexOf(cmp);
+            if(idx >= 0) {
+                _cmps.splice(idx, 1);
+            }
+            return this;
+        };
+    });
+    this.__defineSetter__('__removeCmp', function() {
+        throw '__removeCmp is readonly';
+    });
+
+    return this;
 }
 
 
@@ -96,6 +135,7 @@ MiniAppService.init = function(cmp) {
     if(!this.Name) {
         throw 'service class missed "Name" property';
     }
+    const app = getApp();
     if(!app.__$instances) {
         app.__$instances = {};
     }
@@ -105,25 +145,14 @@ MiniAppService.init = function(cmp) {
     }
     if(this.$instance.$cmps.indexOf(cmp) < 0) {
         if(cmp.$page) {
-            if(!cmp.$page.__$cmps) {
-                cmp.$page.__$cmps = [];
+            if(!cmp.__$svrs) {
+                cmp.__$svrs = [];
             }
-            cmp.$page.__$cmps.push(cmp);
+            cmp.__$svrs.push(this.$instance);
         } else {
             let _onunload = cmp.onUnload;
             cmp.onUnload = () => {
-                if(cmp.__$cmps) {
-                    cmp.__$cmps.forEach((T) => {
-                        let idx = this.$instance.$cmps.indexOf(T);
-                        if(idx >= 0) {
-                            this.$instance.$cmps.splice(idx, 1);
-                        }
-                    });
-                }
-                let idx = this.$instance.$cmps.indexOf(cmp);
-                if(idx >= 0) {
-                    this.$instance.$cmps.splice(idx, 1);
-                }
+                this.$instance.__removeCmp(cmp);
                 if(_onunload) {
                     _onunload.apply(cmp, []);
                 }
@@ -148,10 +177,10 @@ MiniAppService.prototype.$apply = function() {
     } else if (k instanceof Object) {
         filter = arguments[1];
         Object.keys(k).forEach((K) => {
-            k[this.Name + '.' + K] = k[K];
+            k[this.constructor.Name + '.' + K] = k[K];
             delete k[K];
         });
-    } else if(k) {
+    } else if(k !== undefined) {
         v = arguments[1];
         filter = arguments[2];
         k = {
@@ -175,23 +204,29 @@ MiniAppService.prototype.$apply = function() {
 
 MiniAppService.prototype.$set = function() {
     let key = arguments[0],
-        filter = undefined;
+        filter = undefined,
+        useApply = !!!arguments[3];
     if(key instanceof Object) {
         filter = arguments[1];
         Object.keys(key).forEach((T) => {
-            this.$set(T, key[T], filter);
+            this.$set(T, key[T], filter, true);
         });
+        this.$apply(key, filter);
     } else {
         let val = arguments[1];
         filter = arguments[2];
+        key += '';
         let ary = getKeys(key);
         let o = getObj(this.$data, ary);
         setV(o, ary[ary.length - 1], val);
-        this.$apply(key, val, filter);
+        if(useApply) {
+            this.$apply(key, val, filter);
+        }
     }
 };
 
 MiniAppService.prototype.$splice = function(key, val, filter) {
+    key += '';
     let ary = getKeys(key);
     let o = getObj(this.$data, ary);
     let list = o[ary[ary.length - 1]];
