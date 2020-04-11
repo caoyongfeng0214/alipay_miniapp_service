@@ -197,7 +197,7 @@ npm install alipay-miniapp-service
     
 1. Service 中的数组：
 
-    可使用 Service 的 `$splice()` 方法对数组进行操作，它与[“页面”中的 `$spliceData()`](https://opendocs.alipay.com/mini/framework/page-detail#Page.prototype.setData(data%3A%20Object%2C%20callback%3A%20Function))的用法是类似的。
+    可使用 Service 的 `$splice()` 方法对数组进行操作，它与[“页面”中的 `$spliceData()`](https://opendocs.alipay.com/mini/framework/page-detail#Page.prototype.%24spliceData(data%3A%20Object%2C%20callback%3A%20Function))的用法是类似的。
 
     来个示例，为上面示例中的 `Users` Service 添加一个 `del(id)` 方法：
 
